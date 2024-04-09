@@ -392,25 +392,50 @@ model = MainModel(net_G=net_G)
 model.load_state_dict(torch.load("final_model.pt", map_location=device))
 
 #//give the model an image and get the result back
+# def colorize_image(model, img_path):
+#     img = Image.open(img_path).convert("RGB")
+#     img = img.resize((256, 256), Image.BICUBIC)
+#     img = np.array(img)
+#     img_lab = rgb2lab(img).astype("float32")
+#     L = img_lab[[0], ...] / 50. - 1.
+#     L = torch.tensor(L).unsqueeze(0).to(model.device)
+#     with torch.no_grad():
+#         model.net_G.eval()
+#         ab = model.net_G(L)
+#     ab = ab.squeeze(0).cpu().numpy()
+#     L = (L + 1.) * 50.
+#     ab = ab * 110.
+#     # Ensure that both arrays have the same number of dimensions
+#     L = L.cpu().numpy()
+#     if L.ndim == 4:
+#         L = L.squeeze(0)
+#     Lab = np.concatenate([L, ab], axis=0).transpose(1, 2, 0)
+#     # Lab = np.concatenate([L.cpu().numpy(), ab], axis=0).transpose(1, 2, 0)
+#     rgb_img = lab2rgb(Lab)
+#     result_img = Image.fromarray((rgb_img * 255).astype(np.uint8))
+#     result_img.save("result_image.jpg")
+#     return result_img
+
 def colorize_image(model, img_path):
     img = Image.open(img_path).convert("RGB")
-    img = img.resize((256, 256), Image.BICUBIC)
+    
+    # Resize the image while maintaining aspect ratio
+    original_width, original_height = img.size
+    new_height = 256
+    new_width = int(original_width / original_height * new_height)
+    img = img.resize((new_width, new_height), Image.BICUBIC)
+    
     img = np.array(img)
     img_lab = rgb2lab(img).astype("float32")
-    L = img_lab[[0], ...] / 50. - 1.
-    L = torch.tensor(L).unsqueeze(0).to(model.device)
+    L = img_lab[:, :, 0] / 50. - 1.
+    L = torch.tensor(L).unsqueeze(0).unsqueeze(0).to(model.device)  # Add batch and channel dimensions
     with torch.no_grad():
         model.net_G.eval()
         ab = model.net_G(L)
     ab = ab.squeeze(0).cpu().numpy()
-    L = (L + 1.) * 50.
+    L = (L.squeeze(0) + 1.) * 50.
     ab = ab * 110.
-    # Ensure that both arrays have the same number of dimensions
-    L = L.cpu().numpy()
-    if L.ndim == 4:
-        L = L.squeeze(0)
     Lab = np.concatenate([L, ab], axis=0).transpose(1, 2, 0)
-    # Lab = np.concatenate([L.cpu().numpy(), ab], axis=0).transpose(1, 2, 0)
     rgb_img = lab2rgb(Lab)
     result_img = Image.fromarray((rgb_img * 255).astype(np.uint8))
     result_img.save("result_image.jpg")
