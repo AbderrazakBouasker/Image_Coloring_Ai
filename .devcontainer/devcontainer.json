@@ -1,0 +1,55 @@
+{
+	"name": "Ubuntu",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "none"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/neofetch:1": {},
+		"ghcr.io/devcontainers/features/anaconda:latest": {}
+	},
+
+	// "forwardPorts": [],
+
+	"containerUser": "root",
+	
+	"postCreateCommand": "conda init",
+	// "postCreateCommand": "bash .devcontainer/postCreateScript.sh",
+
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot-chat",
+				"GitHub.codespaces",
+				"GitHub.copilot",
+				"GitHub.vscode-pull-request-github",
+				"ms-toolsai.jupyter",
+				"donjayamanne.python-extension-pack",
+				"ms-azuretools.vscode-docker",
+				"DavidAnson.vscode-markdownlint",
+				// vs icons
+				"vscode-icons-team.vscode-icons"
+
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}
