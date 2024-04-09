@@ -18,3 +18,6 @@ def results():
 @app.post("/colorize")
 def colorize():
     return 
+
+if __name__ == "__main__":
+    app.run()
