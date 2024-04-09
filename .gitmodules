@@ -1,0 +1,3 @@
+[submodule "Image-Colorization"]
+	path = Image-Colorization
+	url = https://github.com/JoseMokeni/Image-Colorization.git
