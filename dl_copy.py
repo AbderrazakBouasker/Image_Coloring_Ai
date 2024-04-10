@@ -202,7 +202,7 @@ net_G.load_state_dict(torch.load("res18-unet.pt", map_location=device))
 model = MainModel(net_G=net_G)
 model.load_state_dict(torch.load("final_model.pt", map_location=device))
 
-def colorize_image(model, img_path):
+def colorize_image(img_path):
     img = Image.open(img_path).convert("RGB")
     
     # Resize the image while maintaining aspect ratio
@@ -224,7 +224,7 @@ def colorize_image(model, img_path):
     Lab = np.concatenate([L, ab], axis=0).transpose(1, 2, 0)
     rgb_img = lab2rgb(Lab)
     result_img = Image.fromarray((rgb_img * 255).astype(np.uint8))
-    result_img.save("result_image.jpg")
-    return result_img
+    result_img.save(img_path.split("/")[-1].split(".")[0] + "_result.jpg")
+    return img_path.split("/")[-1].split(".")[0] + "_result.jpg"
 
-colorize_image(model, "sa9r.jpg")
+# colorize_image(model, "sa9r.jpg")
