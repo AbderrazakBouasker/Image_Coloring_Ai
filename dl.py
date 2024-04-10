@@ -441,4 +441,4 @@ def colorize_image(model, img_path):
     result_img.save("result_image.jpg")
     return result_img
 
-colorize_image(model, "bour9iba.jpg")
+colorize_image(model, "sa9r.jpg")
