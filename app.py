@@ -60,6 +60,7 @@ def colorize():
 
         # Return the colorized image URL to the template
         return render_template("index.html", colorized_image_url=colorized_filepath)
+        #return render_template("index.html", colorized_image_url="image_result.jpg")
 
     flash("Invalid file type")
     return redirect(request.url)

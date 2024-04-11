@@ -6,3 +6,4 @@ torch
 fastai
 gdown
 google-cloud-storage
+pytest
