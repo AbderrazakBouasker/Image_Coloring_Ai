@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 from skimage.color import rgb2lab, lab2rgb
-
+from google.cloud import storage
 import torch
 from fastai.vision.learner import create_body
 from torchvision.models import resnet18
@@ -202,6 +202,27 @@ net_G.load_state_dict(torch.load("res18-unet.pt", map_location=device))
 model = MainModel(net_G=net_G)
 model.load_state_dict(torch.load("final_model.pt", map_location=device))
 
+def upload_image_to_bucket(bucket_name, image_path, destination_blob_name):
+    """Uploads an image file to a Google Cloud Storage bucket."""
+    # Initialize a client
+    client = storage.Client()
+
+    # Get the bucket
+    bucket = client.bucket(bucket_name)
+
+    # Path to local image file
+    source_file_name = image_path
+
+    # Destination blob name (file name in the bucket)
+    destination_blob_name = destination_blob_name
+
+    # Upload the file
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(source_file_name)
+
+    print(f"File {source_file_name} uploaded to {bucket_name}/{destination_blob_name}.")
+
+
 def colorize_image(img_path):
     img = Image.open(img_path).convert("RGB")
     
@@ -224,7 +245,17 @@ def colorize_image(img_path):
     Lab = np.concatenate([L, ab], axis=0).transpose(1, 2, 0)
     rgb_img = lab2rgb(Lab)
     result_img = Image.fromarray((rgb_img * 255).astype(np.uint8))
-    result_img.save(img_path.split("/")[-1].split(".")[0] + "_result.jpg")
-    return img_path.split("/")[-1].split(".")[0] + "_result.jpg"
+    #result_img.save(img_path.split("/")[-1].split(".")[0] + "_result.jpg")
+    result_img.save("image_result.jpg")
+    #bucket_name="image_coloring_bucket"
+    #blob_name="newresult.jpg"
+    #upload_image_to_bucket(bucket_name,"rose_result.jpg",blob_name)
+    #blob=bucket.blob(blob_name)
+    #url = blob.public_url
+    #if not url:
+        # If public URL generation fails, manually construct the URL
+        #url = f"https://storage.googleapis.com/{bucket_name}{blob_name}"
+        #url="test"
+    return "image_result.jpg" 
 
 # colorize_image(model, "sa9r.jpg")

@@ -51,12 +51,12 @@ def colorize():
         return redirect(request.url)
 
     if image:
-        filename = secure_filename(image.filename)
+        #filename = secure_filename(image.filename)
         # filepath = os.path.join(app.config["static"], filename)
-        image.save(filename)
+        image.save("image.jpg")
 
         # Call function to colorize the image
-        colorized_filepath = colorize_image(filename)
+        colorized_filepath = colorize_image("image.jpg")
 
         # Return the colorized image URL to the template
         return render_template("index.html", colorized_image_url=colorized_filepath)
@@ -65,4 +65,4 @@ def colorize():
     return redirect(request.url)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
