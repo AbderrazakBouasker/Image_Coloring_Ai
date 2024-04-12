@@ -23,7 +23,7 @@ RUN gdown 1jrEiEaWNNZMwjGxJw0yr5voKaMeo0IP-
 COPY . .
 
 # Expose the Flask port
-EXPOSE 5000
+EXPOSE 8080
 
 # Set the entrypoint command
 CMD ["python3", "app.py"]
