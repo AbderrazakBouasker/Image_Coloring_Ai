@@ -208,7 +208,7 @@ import json
 json_file_path="data.json"
 def add_entry_to_json_file(json_file_path, new_entry):
     entry={
-            new_entry : new_entry
+            new_entry : new_entry ,
             }
     try:
         # Read the existing JSON data
