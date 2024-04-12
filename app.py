@@ -13,7 +13,7 @@ app = Flask(__name__)
 def hello_world():
     return render_template("index.html", title="Hello")
 
-@app.get("/results")
+@app.route("/results", methods=['GET'])
 def results():
     # Load the JSON file containing images and image URLs
     with open("data.json") as file:
@@ -38,7 +38,7 @@ def results():
 #         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     
 
-@app.post("/colorize")
+@app.route("/colorize", methods=['POST'])
 def colorize():
     if "image" not in request.files:
         flash("No file part")

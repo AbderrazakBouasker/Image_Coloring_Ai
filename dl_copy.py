@@ -208,7 +208,7 @@ def upload_image_to_bucket(bucket_name, image_path, destination_blob_name):
     return upload_blob(bucket_name, image_path, destination_blob_name)
 
 
-def colorize_image(model, img_path):
+def colorize_image(img_path):
     img = Image.open(img_path).convert("RGB")
     
     # Resize the image while maintaining aspect ratio
@@ -237,4 +237,3 @@ def colorize_image(model, img_path):
     bucket_name="image_coloring_bucket"
     return upload_image_to_bucket(bucket_name, image_name, image_name) 
 
-colorize_image(model, "image.jpg")
