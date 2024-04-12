@@ -2,3 +2,4 @@ final_model.pt
 res18-unet.pt
 .venv
 credentials.json
+*/__pycache__/*
