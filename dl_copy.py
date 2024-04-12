@@ -203,6 +203,31 @@ net_G.load_state_dict(torch.load("res18-unet.pt", map_location=device))
 model = MainModel(net_G=net_G)
 model.load_state_dict(torch.load("final_model.pt", map_location=device))
 
+import json
+
+json_file_path="data.json"
+def add_entry_to_json_file(json_file_path, new_entry):
+    entry={
+            new_entry : new_entry
+            }
+    try:
+        # Read the existing JSON data
+        with open(json_file_path, 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        # If file doesn't exist yet, start with an empty list/dictionary
+        data = []
+
+    # Append the new entry to the existing data
+    data[new_entry]=new_entry
+
+    # Write back to the JSON file
+    with open(json_file_path, 'w') as file:
+        json.dump(data, file, indent=4)  # indent for pretty formatting
+
+    print(f"Added new entry to {json_file_path}")
+
+
 def upload_image_to_bucket(bucket_name, image_path, destination_blob_name):
     from upload import upload_blob
     return upload_blob(bucket_name, image_path, destination_blob_name)
@@ -235,5 +260,7 @@ def colorize_image(img_path):
     image_name = "image_result" + sysdatetimestamp + ".jpg"
     result_img.save(image_name)
     bucket_name="image_coloring_bucket"
-    return upload_image_to_bucket(bucket_name, image_name, image_name) 
+    uploaded_image_path = upload_image_to_bucket(bucket_name, image_name, image_name)
+    add_entry_to_json_file(json_file_path,uploaded_image_path)
+    return uploaded_image_path 
 
