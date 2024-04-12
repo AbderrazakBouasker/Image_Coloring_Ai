@@ -1,5 +1,6 @@
 # Use a base image with Python and CUDA support
-FROM nvidia/cuda:11.4.0-base
+FROM nvidia/cuda:12.4.1-base-ubuntu22.04
+
 
 # Set the working directory
 WORKDIR /app
