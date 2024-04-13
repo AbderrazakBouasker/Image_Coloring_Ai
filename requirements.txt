@@ -7,3 +7,4 @@ fastai
 gdown
 google-cloud-storage
 pytest
+flask_testing
