@@ -18,7 +18,6 @@ RUN apt update && apt install -y \
 RUN pip3 install --no-cache-dir -r requirements.txt
 RUN gdown 1j__QripZ4wBX0ABgsiGi6B3VfWLCsGO3
 RUN gdown 1jrEiEaWNNZMwjGxJw0yr5voKaMeo0IP-
-RUN gdown <service account credentials file id here (name it credentials.json on drive)>
 
 # Copy the application code
 COPY . .
