@@ -6,3 +6,5 @@ TODO
 salem
 mbote
 jambo
+hakuna 
+matata
