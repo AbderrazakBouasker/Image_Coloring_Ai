@@ -16,6 +16,7 @@ RUN apt update && apt install -y \
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
+# gdown models
 RUN gdown 1j__QripZ4wBX0ABgsiGi6B3VfWLCsGO3
 RUN gdown 1jrEiEaWNNZMwjGxJw0yr5voKaMeo0IP-
 

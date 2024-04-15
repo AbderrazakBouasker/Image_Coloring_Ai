@@ -1,4 +1,3 @@
 final_model.pt
 res18-unet.pt
-credentials.json
 .venv
