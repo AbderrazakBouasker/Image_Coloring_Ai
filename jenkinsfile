@@ -1,0 +1,127 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/AbderrazakBouasker/Image_Coloring_Ai.git']])
+            }
+        }
+        stage('create venv') {
+            steps {
+                script {
+                    // Check if .venv directory exists
+                    def venvDirectory = '.venv'
+                    def venvExists = fileExists(venvDirectory)
+
+                    if (!venvExists) {
+                        // Create virtual environment
+                        sh "/opt/conda/bin/python -m venv ${venvDirectory}"
+                        sh "${venvDirectory}/bin/python -m pip install --upgrade pip"
+                    } else {
+                        echo "Virtual environment directory '${venvDirectory}' already exists. Skipping creation."
+                    }
+                }
+            }
+        }
+        stage('install requirements') {
+            steps {
+                 script {
+                    def requirementsFile = 'requirements.txt'
+                    // def resunet = 'res18-unet.pt'
+                    // def finalmodel = 'final_model.pt'
+                    // def resunetExist = fileExists(resunet)
+                    // def finalmodelExist = fileExists(finalmodel)
+                    def credentials = 'credentials.json'
+                    def credentialsExist = fileExists(credentials)
+                    def modTime = sh(script: "stat -c %Y ${requirementsFile}", returnStdout: true).trim().toInteger()
+                    def currentTime = sh(script: 'date +%s', returnStdout: true).trim().toInteger()
+                    def timeDiff = currentTime - modTime
+                    
+                    // Check if the requirements.txt file was modified within the last 5 minutes (300 seconds)
+                    if (timeDiff <= 300) {
+                        sh ".venv/bin/pip install -r ${requirementsFile} --no-cache-dir"
+                    } else {
+                        echo 'Requirements are up to date.'
+                    }
+                    sh ". .venv/bin/activate"
+                    // if (!resunetExist){
+                    //     sh ".venv/bin/gdown -O res18-unet.pt 1jrEiEaWNNZMwjGxJw0yr5voKaMeo0IP-"
+                    // }
+                    // if (!finalmodelExist){
+                    //     sh ".venv/bin/gdown -O final_model.pt 1j__QripZ4wBX0ABgsiGi6B3VfWLCsGO3"
+                    // }else{
+                    //     echo "models exist"
+                    // }
+                    if (!credentialsExist){
+                        sh ".venv/bin/gdown -O credentials.json 1gvgyL9383c5BZ-tDGPIJ7GdmT1mjdxpK"
+                    }else{
+                        echo "credentials exist"
+                    }
+                }
+            }
+        }
+        // stage('test') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/AbderrazakBouasker/Image_Coloring_Ai.git'
+        //         sh '.venv/bin/pytest test.py'
+        //     }
+        // }
+        stage('build') {
+            steps {
+                sh "docker build -t image_coloring:${env.BUILD_NUMBER} ."
+                echo 'build completed'
+            }
+        }
+        stage('deploy') {
+            steps {
+                script {
+                    
+                    def imageName = "image_coloring:${env.BUILD_NUMBER}"
+                    def imageTag = "josemokeni/image_coloring:${env.BUILD_NUMBER}"
+                    def latestTag = "josemokeni/image_coloring:latest"
+                    def imageTag2 = "abderrazakbouasker/image_coloring:${env.BUILD_NUMBER}"
+                    def latestTag2 = "abderrazakbouasker/image_coloring:latest"
+                    
+                    // Tag the built image with the Docker Hub repository
+                    docker.withRegistry('', 'docker-hub-credentials') {
+                        sh "docker tag ${imageName} ${imageTag}"
+                        sh "docker push ${imageTag}"
+                        sh "docker tag ${imageName} ${latestTag}"
+                        sh "docker push ${latestTag}"
+                        
+                        // Delete locally stored images
+                        // sh "docker rmi ${imageName}"
+                        sh "docker rmi ${imageTag}"
+                        sh "docker rmi ${latestTag}"
+                
+                        echo 'pushing completed Jose'
+                    }
+                    // Tag the built image with the Docker Hub repository
+                    docker.withRegistry('', 'docker-hub-credentials2') {
+                        sh "docker tag ${imageName} ${imageTag2}"
+                        sh "docker push ${imageTag2}"
+                        sh "docker tag ${imageName} ${latestTag2}"
+                        sh "docker push ${latestTag2}"
+                        
+                        // Delete locally stored images
+                        sh "docker rmi ${imageName}"
+                        sh "docker rmi ${imageTag2}"
+                        sh "docker rmi ${latestTag2}"
+                
+                        echo 'pushing completed abderrazak'
+                    }
+                    
+                }
+            }
+        }
+        stage('rolling update'){
+            steps{
+                script{
+                    sh "gcloud container clusters get-credentials flaskapp-cluster --zone us-central1-a --project image-coloring-deep-learning"
+                    sh "kubectl set image deployment/flaskapp image-coloring=josemokeni/image_coloring:${env.BUILD_NUMBER}"
+                }
+            }
+        }
+    }
+}
