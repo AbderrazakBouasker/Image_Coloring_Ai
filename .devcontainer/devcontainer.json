@@ -18,16 +18,14 @@
 		"ghcr.io/devcontainers/features/python:1": {
 			"installTools": true,
 			"version": "latest"
-		},
-		"ghcr.io/devcontainers-contrib/features/neofetch:1": {},
-		"ghcr.io/devcontainers/features/anaconda:latest": {}
+		}
 	},
 
 	// "forwardPorts": [],
 
-	"containerUser": "root",
+	// "containerUser": "root",
 	
-	"postCreateCommand": "conda init",
+	// "postCreateCommand": "conda init",
 	// "postCreateCommand": "bash .devcontainer/postCreateScript.sh",
 
 
